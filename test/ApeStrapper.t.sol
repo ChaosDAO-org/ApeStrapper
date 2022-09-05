@@ -96,11 +96,10 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         assertEq(address(apeContract).balance, 0 ether);
     }
 
-    function testApesAllApproveOnlyDAO() public {
+    function testFailApesAllApproveOnlyDAO() public {
         startHoax(address(apeContract), 1e18);
         assertEq(address(apeContract).balance, 1 ether);
         assertTrue(apeContract.allApesApprove());
-        vm.expectRevert("ApeDoesntApprove");
         apeContract.nannerTime();
         //  assertEq(address(apeContract).balance, 0 ether);
     }
