@@ -1,35 +1,88 @@
-# Foundry Template [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
+# ApeStrapper Version 2.0 [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
+## About
 
-[gha]: https://github.com/paulrberg/foundry-template/actions
-[gha-badge]: https://github.com/paulrberg/foundry-template/actions/workflows/ci.yml/badge.svg
-[foundry]: https://getfoundry.sh/
-[foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
-[license]: https://opensource.org/licenses/MIT
-[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+  TBD
+## Usage
 
-A Foundry-based template for developing Solidity smart contracts, with sensible defaults.
+Here's a list of the most frequently needed commands.
 
-## What's Inside
+### Build
 
-- [Forge](https://github.com/foundry-rs/foundry/blob/master/forge): compile, test, fuzz, debug and deploy smart contracts
-- [PRBTest](https://github.com/paulrberg/prb-test): modern collection of testing assertions and logging utilities
-- [Forge Std](https://github.com/foundry-rs/forge-std): collection of helpful contracts and cheatcodes for testing
-- [Solhint](https://github.com/protofire/solhint): code linter
-- [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
+Build the contracts:
 
-## Getting Started
-
-Click the [`Use this template`](https://github.com/paulrberg/foundry-template/generate) button at the top of the page to create a new repository with this repo as the initial state.
-
-Or, if you prefer to install the template manually:
-
-```sh
-forge init my-project --template https://github.com/paulrberg/foundry-template
-cd my-project
-yarn install # install solhint and prettier and other goodies
+```
+forge build
 ```
 
-If this is your first time with Foundry, check out the [installation](https://github.com/foundry-rs/foundry#installation) instructions.
+### Clean
+
+Delete the build artifacts and cache directories:
+
+```
+forge clean
+```
+
+### Compile
+
+Compile the contracts:
+
+```
+forge build
+```
+
+### Deploy
+
+Deploy to Anvil:
+
+```
+forge script script/Foo.s.sol:FooScript --fork-url http://localhost:8545 \
+ --broadcast --private-key $PRIVATE_KEY
+```
+
+For instructions on how to deploy to a testnet or mainnet, check out the [Solidity Scripting tutorial](https://book.getfoundry.sh/tutorials/solidity-scripting.html).
+
+### Format
+
+Format the contracts with Prettier:
+
+```
+yarn prettier
+```
+
+### Gas Usage
+
+Get a gas report:
+
+```
+ forge test --gas-report
+```
+
+### Lint
+
+Lint the contracts:
+
+```
+yarn lint
+```
+
+### Test
+
+Run the tests:
+
+```
+forge test
+```
+### Slither
+
+Rune slither static-analysis:
+```
+slither src/ApeStrapper.sol  --solc-remaps @openzeppelin/=lib/openzeppelin-contracts/
+```
+
+## Notes
+
+1. Foundry piggybacks off [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to manage dependencies. There's a [guide](https://book.getfoundry.sh/projects/dependencies.html) about how to work with dependencies in the book.
+2. You don't have to create a `.env` file, but filling in the environment variables may be useful when debugging and testing against a mainnet fork.
 
 ## Features
 
@@ -78,82 +131,8 @@ pre-instantiated [cheatcodes](https://book.getfoundry.sh/cheatcodes/) environmen
 
 This template comes with an example test contract [Foo.t.sol](./test/Foo.t.sol).
 
-## Usage
-
-Here's a list of the most frequently needed commands.
-
-### Build
-
-Build the contracts:
-
-```sh
-$ forge build
-```
-
-### Clean
-
-Delete the build artifacts and cache directories:
-
-```sh
-$ forge clean
-```
-
-### Compile
-
-Compile the contracts:
-
-```sh
-$ forge build
-```
-
-### Deploy
-
-Deploy to Anvil:
-
-```sh
-$ forge script script/Foo.s.sol:FooScript --fork-url http://localhost:8545 \
- --broadcast --private-key $PRIVATE_KEY
-```
-
-For instructions on how to deploy to a testnet or mainnet, check out the [Solidity Scripting tutorial](https://book.getfoundry.sh/tutorials/solidity-scripting.html).
-
-### Format
-
-Format the contracts with Prettier:
-
-```sh
-$ yarn prettier
-```
-
-### Gas Usage
-
-Get a gas report:
-
-```sh
-$ forge test --gas-report
-```
-
-### Lint
-
-Lint the contracts:
-
-```sh
-$ yarn lint
-```
-
-### Test
-
-Run the tests:
-
-```sh
-$ forge test
-```
-
-## Notes
-
-1. Foundry piggybacks off [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to manage dependencies. There's a [guide](https://book.getfoundry.sh/projects/dependencies.html) about how to work with dependencies in the book.
-2. You don't have to create a `.env` file, but filling in the environment variables may be useful when debugging and testing against a mainnet fork.
-
+## Acknowledgements
+- [paulrberg](https://github.com/paulrberg/foundry-template)
 ## Related Efforts
 
 - [abigger87/femplate](https://github.com/abigger87/femplate)
@@ -161,6 +140,24 @@ $ forge test
 - [foundry-rs/forge-template](https://github.com/foundry-rs/forge-template)
 - [FrankieIsLost/forge-template](https://github.com/FrankieIsLost/forge-template)
 
+
+[gha]: https://github.com/paulrberg/foundry-template/actions
+[gha-badge]: https://github.com/paulrberg/foundry-template/actions/workflows/ci.yml/badge.svg
+[foundry]: https://getfoundry.sh/
+[foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
+[license]: https://opensource.org/licenses/MIT
+[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+
+A Foundry-based template for developing Solidity smart contracts, with sensible defaults.
+
+## What's Inside
+
+- [Forge](https://github.com/foundry-rs/foundry/blob/master/forge): compile, test, fuzz, debug and deploy smart contracts
+- [PRBTest](https://github.com/paulrberg/prb-test): modern collection of testing assertions and logging utilities
+- [Forge Std](https://github.com/foundry-rs/forge-std): collection of helpful contracts and cheatcodes for testing
+- [Solhint](https://github.com/protofire/solhint): code linter
+- [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
+
 ## License
 
-[MIT](./LICENSE.md) © Paul Razvan Berg
+[MIT](./LICENSE.md) 
