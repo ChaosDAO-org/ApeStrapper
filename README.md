@@ -161,4 +161,4 @@ A Foundry-based template for developing Solidity smart contracts, with sensible 
 
 ## License
 
-[MIT](./LICENSE.md) 
+[MIT](./LICENSE) 
