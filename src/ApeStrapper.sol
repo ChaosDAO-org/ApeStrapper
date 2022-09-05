@@ -24,7 +24,7 @@ pragma solidity 0.8.13;
 contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     ///// State Variables /////////////////////////////////////////////////////
 
-    address private contractCreator;
+    address private immutable contractCreator;
     address private constant APESTRAPPER_MULTISIG_ADDRESS = 0x19F54Ecd7d17895fADDb017d901Db551cA59AF75;
     address private constant CHAOSDAO_MULTISIG_ADDRESS = 0x74800569E2cc88A73c6cB234326b95F7aB8293A1;
     bool public initialized = false;
