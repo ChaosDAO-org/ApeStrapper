@@ -74,8 +74,9 @@ forge test
 ```
 ### Slither
 
-Rune slither static-analysis:
+Install and run slither static-analysis:
 ```
+pip3 install slither-analyzer # Suggest installing a pyenv and using py3.9
 slither src/ApeStrapper.sol  --solc-remaps @openzeppelin/=lib/openzeppelin-contracts/
 ```
 
