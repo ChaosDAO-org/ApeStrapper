@@ -100,21 +100,20 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         startHoax(address(apeContract), 1e18);
         assertEq(address(apeContract).balance, 1 ether);
         assertTrue(apeContract.allApesApprove());
-        vm.expectRevert();
+        vm.expectRevert("ApeDoesntApprove");
         apeContract.nannerTime();
-      //  assertEq(address(apeContract).balance, 0 ether);
+        //  assertEq(address(apeContract).balance, 0 ether);
     }
 
-    function testFuzzDeposit(uint _amount) public {
-        _amount = bound(_amount, 1, type(uint256).max );
-  //    console.log(address(msg.sender).balance);
-        startHoax(address(msg.sender), type(uint256).max );
-  //    console.log(address(msg.sender).balance);
+    function testFuzzDeposit(uint256 _amount) public {
+        _amount = bound(_amount, 1, type(uint256).max);
+        //    console.log(address(msg.sender).balance);
+        startHoax(address(msg.sender), type(uint256).max);
+        //    console.log(address(msg.sender).balance);
         assertEq(address(apeContract).balance, 0 ether);
-  //    console.log(address(apeContract).balance);
-        apeContract.deposit{ value: _amount}();
-  //    console.log(address(apeContract).balance);
+        //    console.log(address(apeContract).balance);
+        apeContract.deposit{ value: _amount }();
+        //    console.log(address(apeContract).balance);
         assertEq(address(apeContract).balance, _amount);
     }
-
 }
