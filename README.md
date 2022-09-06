@@ -7,9 +7,9 @@
 
   - Collect initial contributions, track, and cap contributions to %. Then release to the collator custodian when allocation is met.
   
-  -- Separate deposit functions for custodian payouts and contributor deposits.
+    - Separate deposit functions for custodian payouts and contributor deposits.
   
-  -- Gate deposits with allow-list
+    - Gate deposits with allow-list
   
   
 ## Usage
