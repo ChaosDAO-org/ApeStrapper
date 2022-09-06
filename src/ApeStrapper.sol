@@ -67,7 +67,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
 
     modifier isInitialized() {
         // Logic starts here
-        if (!initialized) revert Initialized(false);
+        if (!initialized) {
+            revert Initialized(false);
+        }
         _;
     }
 
@@ -89,7 +91,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     /// @notice Contract must not be paused
     function deposit() external payable whenNotPaused {
         // Logic starts here
-        if (msg.value == 0) revert NoValue();
+        if (msg.value == 0) {
+            revert NoValue();
+        }
         emit Deposit(_msgSender(), msg.value);
     }
 
@@ -126,7 +130,7 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
         // Revokes and removes items from the array if contract was previously initialized
         if (initialized) {
             // Skips the ChaosDAO multi-sig entry at index 0
-            for (uint256 i = initialNumberOfPayees; apes.length > i; ) {
+            for (uint256 i = initialNumberOfPayees; apes.length > i;) {
                 _dropApe(apes[i]);
                 unchecked {
                     i++;
@@ -134,11 +138,15 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
             }
         }
 
-        for (uint256 i = 0; _numberOfApes > i; ) {
+        for (uint256 i = 0; _numberOfApes > i;) {
             address ape = _addresses[i];
             uint256 contribution = _contributions[i];
-            if (ape == address(0)) revert AddressZeroNotAllowed(ape);
-            if (contribution == 0) revert NoContribution(contribution);
+            if (ape == address(0)) {
+                revert AddressZeroNotAllowed(ape);
+            }
+            if (contribution == 0) {
+                revert NoContribution(contribution);
+            }
             _addApe(ape, contribution);
             _totalMovr += contribution;
             unchecked {
@@ -146,7 +154,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
             }
         }
 
-        if (_totalMovr != (MOVR_BONDED * 1e18)) revert TotalsDontAddUp(_totalMovr);
+        if (_totalMovr != (MOVR_BONDED * 1e18)) {
+            revert TotalsDontAddUp(_totalMovr);
+        }
 
         if (!initialized) {
             initialized = true;
@@ -157,7 +167,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     /// @notice Only the APE_ADMIN_ROLE can call emergencyWithdraw
     function emergencyWithdraw() external onlyRole(APE_ADMIN_ROLE) {
         // Logic starts here
-        if (address(this).balance == 0) revert NoValue();
+        if (address(this).balance == 0) {
+            revert NoValue();
+        }
         _sendNanners(payable(address(APESTRAPPER_MULTISIG_ADDRESS)), address(this).balance);
     }
 
@@ -190,12 +202,14 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     function nannerTime() external whenNotPaused isInitialized nonReentrant {
         // Logic starts here
         // Revert if the contract balance is less than 1 Ether.
-        if (address(this).balance < 1 ether) revert BalanceUnder1Eth(address(this).balance);
+        if (address(this).balance < 1 ether) {
+            revert BalanceUnder1Eth(address(this).balance);
+        }
         //   if(!allApesApprove()) revert NotAllApesApprove(); // Function reverts if any ape has not approved
         allApesApprove();
         uint256 currentBalance = address(this).balance;
         // Starts at array object 1 as 0 is the ChaosDAO multi-sig address. Will pay that out at the end.
-        for (uint256 i = 1; apes.length > i; ) {
+        for (uint256 i = 1; apes.length > i;) {
             address ape = apes[i];
             uint256 allocation = apeAllocation[ape];
             uint256 payout = ((currentBalance * allocation) / 100e18);
@@ -211,10 +225,14 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     ///// External/Public View Functions //////////////////////////////////////
 
     function allApesApprove() public view returns (bool) {
-        if (numberOfPayees <= 1) return false;
-        for (uint256 i = 0; numberOfPayees > i; ) {
+        if (numberOfPayees <= 1) {
+            return false;
+        }
+        for (uint256 i = 0; numberOfPayees > i;) {
             // Logic starts here
-            if (!apeApproved[apes[i]]) revert ApeDoesntApprove(apes[i]);
+            if (!apeApproved[apes[i]]) {
+                revert ApeDoesntApprove(apes[i]);
+            }
             unchecked {
                 i++;
             }
@@ -251,7 +269,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
 
     function _sendNanners(address _recipient, uint256 _amount) private {
         emit Transfer(_recipient, _amount);
-        (bool _success, bytes memory _error) = payable(_recipient).call{ value: _amount }("");
-        if (!_success) revert TransferFailed(address(_recipient), _amount, _error);
+        (bool _success, bytes memory _error) = payable(_recipient).call{value: _amount}("");
+        if (!_success) {
+            revert TransferFailed(address(_recipient), _amount, _error);
+        }
     }
 }
