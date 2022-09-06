@@ -1,7 +1,17 @@
 # ApeStrapper Version 2.0 [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
 ## About
 
-  TBD
+  This contract was created as a mechanism for distributing native token assets received as validator rewards.
+  
+### Features to add
+
+  - Collect initial contributions, track, and cap contributions to %. Then release to the collator custodian when allocation is met.
+  
+  -- Separate deposit functions for custodian payouts and contributor deposits.
+  
+  -- Gate deposits with allow-list
+  
+  
 ## Usage
 
 Here's a list of the most frequently needed commands.
