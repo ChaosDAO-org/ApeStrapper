@@ -39,6 +39,16 @@ forge script script/Foo.s.sol:FooScript --fork-url http://localhost:8545 \
  --broadcast --private-key $PRIVATE_KEY
 ```
 
+Instead of passing a private key you can use the following:
+1. install geth
+2. create a file `pk` with your priv key
+3. `geth account import pk` (choose pw)
+4. `geth account list`
+5. set envvar ETH_KEYSTORE to new keystore path
+6. `shred -n 10 pk`
+
+Credit: https://twitter.com/devtooligan/status/1523716952421584899
+
 For instructions on how to deploy to a testnet or mainnet, check out the [Solidity Scripting tutorial](https://book.getfoundry.sh/tutorials/solidity-scripting.html).
 
 ### Format
