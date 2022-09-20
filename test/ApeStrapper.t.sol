@@ -14,10 +14,7 @@ import {ApeStrapper} from "src/ApeStrapper.sol";
 
 // / @dev See the "Writing Tests" section in the Foundry Book if this is your first time with Forge.
 // / https://book.getfoundry.sh/forge/writing-tests
-contract ApeStrapperTest is PRBTest,
-Cheats,
-Utils,
-ApeStrapper {
+contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     ApeStrapper public apeContract;
 
     address public user1 = address(1);
@@ -99,7 +96,7 @@ ApeStrapper {
     ];
 
     // /// Setup  ///////////////////////////////////////////////////
-    function setUp()public {
+    function setUp() public {
         apeContract = new ApeStrapper();
         apeContract.setApeAllocationList(contributors, contributions);
 
@@ -111,7 +108,7 @@ ApeStrapper {
     }
 
     // /// Helpers  ///////////////////////////////////////////////////
-    function makeAllApesApprove()public {
+    function makeAllApesApprove() public {
         for (uint256 i; i < contributors.length; ++i) {
             vm.startPrank(contributors[i], contributors[i]);
             apeContract.approveContract();
@@ -120,10 +117,14 @@ ApeStrapper {
         apeContract.revokeContractCreatorAccess();
     }
 
-    function makeNotAllApesApprove()public {
+    function makeNotAllApesApprove() public {
         for (uint256 i; i < contributors.length; ++i) {
             vm.startPrank(contributors[i], address(0));
-            vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("ContractsNotAllowed(address,address)")), address(0), contributors[i]));
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    bytes4(keccak256("ContractsNotAllowed(address,address)")), address(0), contributors[i]
+                )
+            );
             apeContract.approveContract();
             vm.stopPrank();
         }
@@ -131,22 +132,20 @@ ApeStrapper {
     }
 
     // /// Happy Path Tests  ///////////////////////////////////////////////////
-    function testIfAllApesApprove()public {
+    function testIfAllApesApprove() public {
         makeAllApesApprove();
         for (uint256 i; i < contributors.length; ++i) {
             assertEq(apeContract.apeApproved(contributors[i]), true);
         }
     }
 
-    function testDeposit()public {
+    function testDeposit() public {
         assertEq(address(apeContract).balance, 0 ether);
-        apeContract.deposit {
-            value : 100e18
-        }();
+        apeContract.deposit{value: 100e18}();
         assertEq(address(apeContract).balance, 100 ether);
     }
 
-    function testEmergencyWithdrawal()public {
+    function testEmergencyWithdrawal() public {
         startHoax(address(apeContract), 10e18);
         vm.stopPrank();
 
@@ -158,17 +157,15 @@ ApeStrapper {
         assertEq(address(APESTRAPPER_MULTISIG_ADDRESS).balance, 10e18);
     }
 
-    function testNannerTime()public {
+    function testNannerTime() public {
         makeAllApesApprove();
-        apeContract.deposit {
-            value : 4 ether
-        }();
+        apeContract.deposit{value: 4 ether}();
         assertEq(address(apeContract).balance, 4 ether);
         apeContract.nannerTime();
         assertEq(address(apeContract).balance, 0 ether);
     }
 
-    function testFailApesAllApproveOnlyDAO()public {
+    function testFailApesAllApproveOnlyDAO() public {
         startHoax(address(apeContract), 100e18);
         assertEq(address(apeContract).balance, 100 ether);
         assertFalse(apeContract.allApesApprove());
@@ -177,26 +174,26 @@ ApeStrapper {
     }
 
     ///// Sad Path Tests  ///////////////////////////////////////////////////
-    function testNannerTimeNotAllApesApprove()public { 
+    function testNannerTimeNotAllApesApprove() public {
         makeNotAllApesApprove();
-        apeContract.deposit {
-            value : 4 ether
-        }();
+        apeContract.deposit{value: 4 ether}();
         assertEq(address(apeContract).balance, 4 ether);
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("ApeDoesntApprove(address)")), 0x5854dc6c98520274B9D592ee01982807A39978E8));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                bytes4(keccak256("ApeDoesntApprove(address)")), 0x5854dc6c98520274B9D592ee01982807A39978E8
+            )
+        );
         apeContract.nannerTime();
         assertEq(address(apeContract).balance, 4 ether);
     }
 
     ///// Fuzz Tests  ///////////////////////////////////////////////////
-    function testFuzzDeposit(uint256 _amount)public {
+    function testFuzzDeposit(uint256 _amount) public {
         // Using bound https://book.getfoundry.sh/reference/forge-std/bound?highlight=bound#bound
         _amount = bound(_amount, 1, type(uint256).max);
         startHoax(address(msg.sender), type(uint256).max);
         assertEq(address(apeContract).balance, 0 ether);
-        apeContract.deposit {
-            value : _amount
-        }();
+        apeContract.deposit{value: _amount}();
         assertEq(address(apeContract).balance, _amount);
     }
 }
