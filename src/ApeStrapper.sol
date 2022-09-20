@@ -23,7 +23,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 //slither-disable-next-line solc-version
 pragma solidity 0.8.13;
 
-contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable  {
+contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
     /*//////////////////////////////////////////////////////////////
                                 State Variables
     //////////////////////////////////////////////////////////////*/
@@ -36,11 +36,11 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable  {
     bytes32 private constant APE_ADMIN_ROLE = keccak256("APE_ADMIN_ROLE");
     bytes32 private constant APE_ROLE = keccak256("APE_ROLE");
     string private constant ADD = "ADD";
-    string private constant DROP = "DROP";    
+    string private constant DROP = "DROP";
 
     address private immutable contractCreator;
     bool public initialized = false;
-    uint8 private initialNumberOfPayees = 0;    
+    uint8 private initialNumberOfPayees = 0;
 
     mapping(address => uint256) public apeAllocation;
     mapping(address => bool) public apeApproved;
@@ -284,7 +284,6 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable  {
         emit ApeList(DROP, _ape, uint256(0));
     }
 
-
     //slither-disable-next-line calls-loop arbitrary-send-eth
     function _sendNanners(address _recipient, uint256 _amount) private {
         // Effects
@@ -299,7 +298,7 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable  {
 
     /// @notice Clears all apes except for the ChaosDAO mutli-sig from the allocation list
     function _clearApeAllocationList() private {
-      uint _apesLength = apes.length;
+        uint256 _apesLength = apes.length;
         // Skips the ChaosDAO multi-sig entry at index 0
         for (uint256 i = initialNumberOfPayees; _apesLength > i;) {
             // Effects
