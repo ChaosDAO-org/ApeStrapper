@@ -19,33 +19,31 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /// @title ChaosDAO Moonriver collator payment distribution contract v3
 /// @author 0xTaylor
 /// @dev Shout out to Polka Haus for all of their support!!!
+
+//slither-disable-next-line solc-version
 pragma solidity 0.8.13;
 
-contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
+contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable  {
     /*//////////////////////////////////////////////////////////////
                                 State Variables
     //////////////////////////////////////////////////////////////*/
 
     address private constant APESTRAPPER_MULTISIG_ADDRESS = 0x19F54Ecd7d17895fADDb017d901Db551cA59AF75;
     address private constant CHAOSDAO_MULTISIG_ADDRESS = 0x74800569E2cc88A73c6cB234326b95F7aB8293A1;
-    address private immutable contractCreator;
-
     uint256 private constant CHAOSDAO_ALLOCATION = 12; // 12%
     uint256 private constant MAX_APES = 20;
     uint256 private constant MOVR_BONDED = 602;
-
     bytes32 private constant APE_ADMIN_ROLE = keccak256("APE_ADMIN_ROLE");
     bytes32 private constant APE_ROLE = keccak256("APE_ROLE");
-
     string private constant ADD = "ADD";
-    string private constant DROP = "DROP";
+    string private constant DROP = "DROP";    
 
+    address private immutable contractCreator;
     bool public initialized = false;
-    uint8 private initialNumberOfPayees = 0;
+    uint8 private initialNumberOfPayees = 0;    
 
     mapping(address => uint256) public apeAllocation;
     mapping(address => bool) public apeApproved;
-
     address[] public apes;
 
     ///// Events //////////////////////////////////////////////////////////////
@@ -58,15 +56,15 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     ///// Errors //////////////////////////////////////////////////////////////
 
     error AddressZeroNotAllowed(address);
-    error ArraysNotEqualLength(uint256, uint256);
     error ApeDoesntApprove(address);
+    error ArraysNotEqualLength(uint256, uint256);
     error BalanceUnder1Eth(uint256);
+    error ContractsNotAllowed(address origin, address sender);
     error Initialized(bool);
     error NoContribution(uint256);
     error NoValue();
     error TooManyApes(uint256 _sumTotal, uint256 _numberOfApes);
     error TotalsDontAddUp(uint256);
-    error ContractsNotAllowed(address origin, address sender);
     error TransferFailed(address recipient, uint256 contractBalance, bytes _error);
 
     ///// Modifiers ///////////////////////////////////////////////////////////
@@ -129,6 +127,7 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     /// @notice Only APE_ADMIN_ROLE can calls setApeAllocationList
     /// @param _contributors takes in an array of Ape addresses
     /// @param _contributions takes in an array of Ape contribution
+    //slither-disable-next-line naming-convention
     function setApeAllocationList(address[] calldata _contributors, uint256[] calldata _contributions)
         external
         whenNotPaused
@@ -179,6 +178,7 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     /// @notice Will withdraw whatever $MOVR balance is in the account to the ApeStrapper MultiSig Account
     /// @notice Only the APE_ADMIN_ROLE can call emergencyWithdraw
     function emergencyWithdraw() external onlyRole(APE_ADMIN_ROLE) {
+        //slither-disable-next-line incorrect-equality
         if (address(this).balance == 0) {
             revert NoValue();
         }
@@ -260,7 +260,7 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
     }
 
     ///// Public Pure Functions ///////////////////////////////////////////////
-
+    //slither-disable-next-line naming-convention
     function calculatePortion(uint256 _contribution) public pure returns (uint256 _portion) {
         return ((_contribution * (100 - CHAOSDAO_ALLOCATION)) / MOVR_BONDED);
     }
@@ -284,10 +284,13 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
         emit ApeList(DROP, _ape, uint256(0));
     }
 
+
+    //slither-disable-next-line calls-loop arbitrary-send-eth
     function _sendNanners(address _recipient, uint256 _amount) private {
         // Effects
         emit Transfer(_recipient, _amount);
         // Interactions
+        //slither-disable-next-line low-level-calls
         (bool _success, bytes memory _error) = payable(_recipient).call{value: _amount}("");
         if (!_success) {
             revert TransferFailed(address(_recipient), _amount, _error);
@@ -296,8 +299,9 @@ contract ApeStrapper is AccessControl, Pausable, ReentrancyGuard {
 
     /// @notice Clears all apes except for the ChaosDAO mutli-sig from the allocation list
     function _clearApeAllocationList() private {
+      uint _apesLength = apes.length;
         // Skips the ChaosDAO multi-sig entry at index 0
-        for (uint256 i = initialNumberOfPayees; apes.length > i;) {
+        for (uint256 i = initialNumberOfPayees; _apesLength > i;) {
             // Effects
             _dropApe(apes[i]);
             unchecked {
