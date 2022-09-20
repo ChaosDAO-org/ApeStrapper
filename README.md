@@ -1,4 +1,5 @@
 # ApeStrapper Version 2.0 [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
+
 ## About
 
   This contract was created as a mechanism for distributing native token assets received as validator rewards.
@@ -9,9 +10,81 @@
   
     - Separate deposit functions for custodian payouts and contributor deposits.
   
-    - Gate deposits with allow-list
+    - Gate deposits with allow-list so only defined participants can join.
+
+    - Create withdrawal function of accrued collator upstart funds for collator custodian.
+
+### Longer-term features to add
+
+    - Implement logic to verify that participants are also self-staking enough to the collator
+
+      - This will require PureStake to first give the go-ahead that it's okay for smart contracts to interact with precompiles.
   
-  
+
+## Code coverage
+
+`# forge coverage`
+
++---------------------+----------------+----------------+----------------+---------------+
+| File                | % Lines        | % Statements   | % Branches     | % Funcs       |
++========================================================================================+
+| src/ApeStrapper.sol | 41.10% (30/73) | 42.86% (33/77) | 33.33% (10/30) | 40.00% (6/15) |
+|---------------------+----------------+----------------+----------------+---------------|
+| Total               | 41.10% (30/73) | 42.86% (33/77) | 33.33% (10/30) | 40.00% (6/15) |
++---------------------+----------------+----------------+----------------+---------------+
+
+
+## Tree
+
+`# forge tree`
+
+src/ApeStrapper.sol 0.8.13
+├── lib/openzeppelin-contracts/contracts/access/AccessControl.sol ^0.8.0
+│   ├── lib/openzeppelin-contracts/contracts/access/IAccessControl.sol ^0.8.0
+│   ├── lib/openzeppelin-contracts/contracts/utils/Context.sol ^0.8.0
+│   ├── lib/openzeppelin-contracts/contracts/utils/Strings.sol ^0.8.0
+│   └── lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol ^0.8.0
+│       └── lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol ^0.8.0
+├── lib/openzeppelin-contracts/contracts/access/IAccessControl.sol ^0.8.0
+├── lib/openzeppelin-contracts/contracts/security/Pausable.sol ^0.8.0
+│   └── lib/openzeppelin-contracts/contracts/utils/Context.sol ^0.8.0
+└── lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol ^0.8.0
+test/ApeStrapper.t.sol >= 0.8 .13
+├── lib/forge-std/src/Cheats.sol >=0.6.0 <0.9.0
+│   ├── lib/forge-std/src/Storage.sol >=0.6.0 <0.9.0
+│   │   └── lib/forge-std/src/Vm.sol >=0.6.0 <0.9.0
+│   └── lib/forge-std/src/Vm.sol >=0.6.0 <0.9.0
+├── lib/forge-std/src/console.sol >=0.4.22 <0.9.0
+├── lib/forge-std/src/Utils.sol >=0.6.0 <0.9.0
+│   └── lib/forge-std/src/console2.sol >=0.4.22 <0.9.0
+├── lib/prb-test/src/PRBTest.sol >=0.8.0 <0.9.0
+│   ├── lib/prb-test/src/Helpers.sol >=0.8.0 <0.9.0
+│   └── lib/prb-test/src/Vm.sol >=0.8.0 <0.9.0
+└── src/ApeStrapper.sol 0.8.13 (*)
+
+## Storage
+
+`# forge inspect ApeStrapper storage  --pretty`
++-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------+
+| Name                  | Type                                              | Slot | Offset | Bytes | Contract                        |
++=====================================================================================================================================+
+| _roles                | mapping(bytes32 => struct AccessControl.RoleData) | 0    | 0      | 32    | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| _status               | uint256                                           | 1    | 0      | 32    | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| _paused               | bool                                              | 2    | 0      | 1     | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| initialized           | bool                                              | 2    | 1      | 1     | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| initialNumberOfPayees | uint8                                             | 2    | 2      | 1     | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| apeAllocation         | mapping(address => uint256)                       | 3    | 0      | 32    | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| apeApproved           | mapping(address => bool)                          | 4    | 0      | 32    | src/ApeStrapper.sol:ApeStrapper |
+|-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------|
+| apes                  | address[]                                         | 5    | 0      | 32    | src/ApeStrapper.sol:ApeStrapper |
++-----------------------+---------------------------------------------------+------+--------+-------+---------------------------------+
+
 ## Usage
 
 Here's a list of the most frequently needed commands.
@@ -50,6 +123,7 @@ forge script script/Foo.s.sol:FooScript --fork-url http://localhost:8545 \
 ```
 
 Instead of passing a private key you can use the following:
+
 1. install geth
 2. create a file `pk` with your priv key
 3. `geth account import pk` (choose pw)
@@ -66,7 +140,7 @@ For instructions on how to deploy to a testnet or mainnet, check out the [Solidi
 Format the contracts with Prettier:
 
 ```
-yarn prettier
+forge fmt
 ```
 
 ### Gas Usage
@@ -92,9 +166,11 @@ Run the tests:
 ```
 forge test
 ```
+
 ### Slither
 
 Install and run slither static-analysis:
+
 ```
 pip3 install slither-analyzer # Suggest installing a pyenv and using py3.9
 slither src/ApeStrapper.sol  --solc-remaps @openzeppelin/=lib/openzeppelin-contracts/
@@ -153,14 +229,15 @@ pre-instantiated [cheatcodes](https://book.getfoundry.sh/cheatcodes/) environmen
 This template comes with an example test contract [Foo.t.sol](./test/Foo.t.sol).
 
 ## Acknowledgements
+
 - [paulrberg](https://github.com/paulrberg/foundry-template)
+
 ## Related Efforts
 
 - [abigger87/femplate](https://github.com/abigger87/femplate)
 - [cleanunicorn/ethereum-smartcontract-template](https://github.com/cleanunicorn/ethereum-smartcontract-template)
 - [foundry-rs/forge-template](https://github.com/foundry-rs/forge-template)
 - [FrankieIsLost/forge-template](https://github.com/FrankieIsLost/forge-template)
-
 
 [gha]: https://github.com/paulrberg/foundry-template/actions
 [gha-badge]: https://github.com/paulrberg/foundry-template/actions/workflows/ci.yml/badge.svg
@@ -181,4 +258,4 @@ A Foundry-based template for developing Solidity smart contracts, with sensible 
 
 ## License
 
-[MIT](./LICENSE) 
+[MIT](./LICENSE)
