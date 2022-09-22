@@ -1,71 +1,22 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >= 0.8 .13;
+pragma solidity >= 0.8.13;
 
 import {Cheats} from "forge-std/Cheats.sol";
-// import { Vm } from "forge-std/Vm.sol";
 import {console} from "forge-std/console.sol";
 import {Utils} from "forge-std/Utils.sol";
 import {PRBTest} from "@prb/test/PRBTest.sol";
 import {ApeStrapper} from "src/ApeStrapper.sol";
 
 /* need to add in expectEmits, expectRevert, expectCall  (https://book.getfoundry.sh/cheatcodes/expect-emit)
-
+add tests pause, unpause
 */
 
-// / @dev See the "Writing Tests" section in the Foundry Book if this is your first time with Forge.
-// / https://book.getfoundry.sh/forge/writing-tests
 contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
+    
     ApeStrapper public apeContract;
-
-    address public user1 = address(1);
-    address public user2 = address(2);
-    address public user3 = address(3);
-    address public user4 = address(4);
-    address public user5 = address(5);
-    address public user6 = address(6);
-    address public user7 = address(7);
-    address public user8 = address(8);
-    address public user9 = address(9);
-    address public user10 = address(10);
-    address public user11 = address(11);
-    address public user12 = address(12);
-    address public user13 = address(13);
-    address public user14 = address(14);
-    address public user15 = address(15);
-    address public user16 = address(16);
-    address public user17 = address(17);
-    address public user18 = address(18);
-    address public user19 = address(19);
-    address public user20 = address(20);
-    address public user21 = address(21);
-
-    //    vm.label(user01, "User01");
-    // vm.label(user02, "User02");
-    // vm.label(user03, "User03");
-    // vm.label(user04, "User04");
-    // vm.label(user05, "User05");
-    // vm.label(user06, "User06");
-    // vm.label(user07, "User07");
-    // vm.label(user08, "User08");
-    // vm.label(user09, "User09");
-    // vm.label(user10, "User10");
-    // vm.label(user11, "User11");
-    // vm.label(user12, "User12");
-    // vm.label(user13, "User13");
-    // vm.label(user14, "User14");
-    // vm.label(user15, "User15");
-    // vm.label(user16, "User16");
-    // vm.label(user17, "User17");
-    // vm.label(user18, "User18");
-    // vm.label(user19, "User19");
-    // vm.label(user20, "User20");
-    //     vm.label(user21, "User21");
 
     address private constant CHAOSDAO_MULTISIG_ADDRESS = 0x74800569E2cc88A73c6cB234326b95F7aB8293A1;
     address private constant APESTRAPPER_MULTISIG_ADDRESS = 0x19F54Ecd7d17895fADDb017d901Db551cA59AF75;
-
-    // vm.label(address(0x19F54Ecd7d17895fADDb017d901Db551cA59AF75), "ApeStrapper Multi-Sig");
-    // vm.label(CHAOSDAO_MULTISIG_ADDRESS, "ChaosDAO Multi-Sig");
 
     address[] private contributors = [
         0x5854dc6c98520274B9D592ee01982807A39978E8,
@@ -95,15 +46,53 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         16388384754990900000
     ];
 
-    // /// Setup  ///////////////////////////////////////////////////
+    //// Setup  ///////////////////////////////////////////////////
+
+    address public ape12 = address(12);
+    address public ape13 = address(13);
+    address public ape14 = address(14);
+    address public ape15 = address(15);
+    address public ape16 = address(16);
+    address public ape17 = address(17);
+    address public ape18 = address(18);
+    address public ape19 = address(19);
+    address public ape20 = address(20);
+    address public ape21 = address(21);
+
     function setUp() public {
+        // Multi-sig labels
+        vm.label(address(0x19F54Ecd7d17895fADDb017d901Db551cA59AF75), "ApeStrapper Multi-Sig");
+        vm.label(CHAOSDAO_MULTISIG_ADDRESS, "ChaosDAO Multi-Sig");
+        // Ape labels
+        vm.label(address(0x5854dc6c98520274B9D592ee01982807A39978E8), "Ape01");
+        vm.label(address(0x97057dEf7F0590C0F8455290E26B42F72cb11d79), "Ape02");
+        vm.label(address(0x0cb96b749e57F2eE5b61711b4BB37a9567d7b090), "Ape03");
+        vm.label(address(0xd3dE1f8Aa8e9Cf7133Bb65f4555F8f09cFCB7473), "Ape04");
+        vm.label(address(0x4C0398b106Bc617A935f63b28a550A923aaDE6bf), "Ape05");
+        vm.label(address(0x151AE0BD359D32E2a76D0237ac7Ac9f0888263b6), "Ape06");
+        vm.label(address(0x014536b207090CF1d4D38409f32864e94d6090A5), "Ape07");
+        vm.label(address(0xD4b954c7DBD77c2FADCD66Ec681Dd992e97a9374), "Ape08");
+        vm.label(address(0x3185E982D8Dc70af2634DC2406714C59cc3db550), "Ape09");
+        vm.label(address(0xcC2c8f387c4FafcBfE299F21dC9dD0dCc8E3f7aC), "Ape10");
+        vm.label(address(0xB5D93Dbeff89f84058DEC857E8b60817B6C4E62d), "Ape11");
+        vm.label(ape12, "Ape12");
+        vm.label(ape13, "Ape13");
+        vm.label(ape14, "Ape14");
+        vm.label(ape15, "Ape15");
+        vm.label(ape16, "Ape16");
+        vm.label(ape17, "Ape17");
+        vm.label(ape18, "Ape18");
+        vm.label(ape19, "Ape19");
+        vm.label(ape20, "Ape20");
+        vm.label(ape21, "Ape21");
+
         apeContract = new ApeStrapper();
         apeContract.setApeAllocationList(contributors, contributions);
 
         startHoax(address(apeContract), 0e18);
         vm.stopPrank();
 
-        hoax(address(this), 1000e18);
+        startHoax(address(this), 1000e18);
         vm.stopPrank();
     }
 
@@ -132,6 +121,14 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     }
 
     // /// Happy Path Tests  ///////////////////////////////////////////////////
+    function testRevokeContractCreatorAccess() public {
+        vm.startPrank(address(this), address(this));
+       // vm.expectEmit(true, true, false, true, address(apeContract));
+        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        apeContract.revokeContractCreatorAccess();
+        assertFalse(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+    }
+
     function testIfAllApesApprove() public {
         makeAllApesApprove();
         for (uint256 i; i < contributors.length; ++i) {
@@ -187,6 +184,34 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         assertEq(address(apeContract).balance, 4 ether);
     }
 
+    function testEmergencyWithdrawalExpectFail() public {
+        startHoax(address(apeContract), 10e18);
+        vm.stopPrank();
+
+        vm.startPrank(address(1));
+        //   vm.stopPrank();
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account 0x0000000000000000000000000000000000000001 is missing role 0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9"
+            )
+        );
+        apeContract.emergencyWithdraw();
+        assertEq(address(apeContract).balance, 10e18);
+        vm.stopPrank();
+    }
+
+    function testRevokeContractCreatorAccessFail() public {
+        vm.startPrank(address(1), address(1));
+        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account 0x0000000000000000000000000000000000000001 is missing role 0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9"
+            )
+        );
+        apeContract.revokeContractCreatorAccess();
+        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+    }
+
     ///// Fuzz Tests  ///////////////////////////////////////////////////
     function testFuzzDeposit(uint256 _amount) public {
         // Using bound https://book.getfoundry.sh/reference/forge-std/bound?highlight=bound#bound
@@ -195,5 +220,10 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         assertEq(address(apeContract).balance, 0 ether);
         apeContract.deposit{value: _amount}();
         assertEq(address(apeContract).balance, _amount);
+    }
+
+    function testFuzzCalculatePortion(uint256 _contribution) external {
+        _contribution = bound(_contribution, 1, 602);
+        assertEq(apeContract.calculatePortion(_contribution), _contribution * (100 - 12) / 602);
     }
 }
