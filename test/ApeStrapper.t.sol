@@ -12,7 +12,6 @@ add tests pause, unpause
 */
 
 contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
-    
     ApeStrapper public apeContract;
 
     address private constant CHAOSDAO_MULTISIG_ADDRESS = 0x74800569E2cc88A73c6cB234326b95F7aB8293A1;
@@ -87,7 +86,9 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         vm.label(ape21, "Ape21");
 
         apeContract = new ApeStrapper();
+        assertFalse(apeContract.initialized());
         apeContract.setApeAllocationList(contributors, contributions);
+        assertTrue(apeContract.initialized());
 
         startHoax(address(apeContract), 0e18);
         vm.stopPrank();
@@ -123,10 +124,14 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     // /// Happy Path Tests  ///////////////////////////////////////////////////
     function testRevokeContractCreatorAccess() public {
         vm.startPrank(address(this), address(this));
-       // vm.expectEmit(true, true, false, true, address(apeContract));
-        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        // vm.expectEmit(true, true, false, true, address(apeContract));
+        assertTrue(
+            apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this))
+        );
         apeContract.revokeContractCreatorAccess();
-        assertFalse(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        assertFalse(
+            apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this))
+        );
     }
 
     function testIfAllApesApprove() public {
@@ -202,14 +207,18 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
 
     function testRevokeContractCreatorAccessFail() public {
         vm.startPrank(address(1), address(1));
-        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        assertTrue(
+            apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this))
+        );
         vm.expectRevert(
             abi.encodePacked(
                 "AccessControl: account 0x0000000000000000000000000000000000000001 is missing role 0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9"
             )
         );
         apeContract.revokeContractCreatorAccess();
-        assertTrue(apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this)));
+        assertTrue(
+            apeContract.hasRole(0xc8646254b43d5f02db6fe5d5d02c9a52e5ab473f9fa90147574047707f10dda9, address(this))
+        );
     }
 
     ///// Fuzz Tests  ///////////////////////////////////////////////////
