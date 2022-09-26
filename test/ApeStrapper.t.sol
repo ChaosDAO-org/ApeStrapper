@@ -45,7 +45,9 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         16388384754990900000
     ];
 
-    //// Setup  ///////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
+                            SETUP          
+    //////////////////////////////////////////////////////////////*/
 
     address public ape12 = address(12);
     address public ape13 = address(13);
@@ -59,10 +61,10 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     address public ape21 = address(21);
 
     function setUp() public {
-        // Multi-sig labels
+        /// @notice Multi-sig labels
         vm.label(address(0x19F54Ecd7d17895fADDb017d901Db551cA59AF75), "ApeStrapper Multi-Sig");
         vm.label(CHAOSDAO_MULTISIG_ADDRESS, "ChaosDAO Multi-Sig");
-        // Ape labels
+        /// @notice Ape labels
         vm.label(address(0x5854dc6c98520274B9D592ee01982807A39978E8), "Ape01");
         vm.label(address(0x97057dEf7F0590C0F8455290E26B42F72cb11d79), "Ape02");
         vm.label(address(0x0cb96b749e57F2eE5b61711b4BB37a9567d7b090), "Ape03");
@@ -97,7 +99,9 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         vm.stopPrank();
     }
 
-    // /// Helpers  ///////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
+                                HELPERS   
+    //////////////////////////////////////////////////////////////*/
     function makeAllApesApprove() public {
         for (uint256 i; i < contributors.length; ++i) {
             vm.startPrank(contributors[i], contributors[i]);
@@ -121,7 +125,10 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         apeContract.revokeContractCreatorAccess();
     }
 
-    // /// Happy Path Tests  ///////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
+                           HAPPY PATH TESTS          
+    //////////////////////////////////////////////////////////////*/
+
     function testRevokeContractCreatorAccess() public {
         vm.startPrank(address(this), address(this));
         // vm.expectEmit(true, true, false, true, address(apeContract));
@@ -175,7 +182,10 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         assertEq(address(apeContract).balance, 0 ether);
     }
 
-    ///// Sad Path Tests  ///////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
+                           SAD PATH TESTS          
+    //////////////////////////////////////////////////////////////*/
+
     function testNannerTimeNotAllApesApprove() public {
         makeNotAllApesApprove();
         apeContract.deposit{value: 4 ether}();
@@ -221,7 +231,9 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         );
     }
 
-    ///// Fuzz Tests  ///////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
+                           FUZZ TESTS          
+    //////////////////////////////////////////////////////////////*/
     function testFuzzDeposit(uint256 _amount) public {
         // Using bound https://book.getfoundry.sh/reference/forge-std/bound?highlight=bound#bound
         _amount = bound(_amount, 1, type(uint256).max);
