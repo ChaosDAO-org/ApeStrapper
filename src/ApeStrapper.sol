@@ -22,8 +22,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 //slither-disable-next-line solc-version
 pragma solidity 0.8.13;
-
 contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
+
     /*//////////////////////////////////////////////////////////////
                            STATE VARIABLES          
     //////////////////////////////////////////////////////////////*/
@@ -84,7 +84,7 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
     }
 
     /*//////////////////////////////////////////////////////////////
-                            CONSTRUCTORS           
+                            CONSTRUCTOR           
     //////////////////////////////////////////////////////////////*/
 
     constructor() {
@@ -99,7 +99,7 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
     }
 
     /*//////////////////////////////////////////////////////////////
-                          PAYABLE FUNCTIONS          
+                          PAYABLE FUNCTION          
    //////////////////////////////////////////////////////////////*/
 
     /// @notice This function takes deposits.
@@ -114,7 +114,7 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
     }
 
     /*//////////////////////////////////////////////////////////////
-                           APE_ROLE FUNCTIONS                      
+                           APE_ROLE FUNCTION                      
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Used by the Ape to signify their approval of the contract
@@ -301,7 +301,7 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
         // Effects
         emit Transfer(_recipient, _amount);
         // Interactions
-        //slither-disable-next-line low-level-calls
+        //slither-disable-next-line low-level-calls arbitrary-send-eth
         (bool _success, bytes memory _error) = payable(_recipient).call{value: _amount}("");
         // Checks on Interactions
         if (!_success) {
@@ -310,11 +310,12 @@ contract ApeStrapper is AccessControl, ReentrancyGuard, Pausable {
     }
 
     /// @notice Clears all apes except for the ChaosDAO mutli-sig from the allocation list
-    function _clearApeAllocationList() private {
+    //function _clearApeAllocationList() private { !!!!!!!!! CHANGE BACK!!!!!!!
+    function _clearApeAllocationList() public {
         /// @notice saves on the sloads
         uint256 _apesLength = apes.length;
-        /// @bituce Skips the ChaosDAO multi-sig entry at index 0
-        for (uint256 i = initialNumberOfPayees; _apesLength > i;) {
+        /// @notice Skips the ChaosDAO multi-sig entry at index 0
+        for (uint256 i = initialNumberOfPayees; _apesLength > 4;) {
             // Effects
             _dropApe(apes[i]);
             unchecked {

@@ -60,6 +60,18 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     address public ape20 = address(20);
     address public ape21 = address(21);
 
+    address[] private contributors2 = [
+        ape12,
+        ape13,
+        ape14
+    ];
+
+    uint256[] private contributions2 = [
+        200e18,
+        100e18,
+        302e8
+    ];
+
     function setUp() public {
         /// @notice Multi-sig labels
         vm.label(address(0x19F54Ecd7d17895fADDb017d901Db551cA59AF75), "ApeStrapper Multi-Sig");
@@ -88,15 +100,14 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
         vm.label(ape21, "Ape21");
 
         apeContract = new ApeStrapper();
-        assertFalse(apeContract.initialized());
-        apeContract.setApeAllocationList(contributors, contributions);
-        assertTrue(apeContract.initialized());
-
-        startHoax(address(apeContract), 0e18);
-        vm.stopPrank();
-
-        startHoax(address(this), 1000e18);
-        vm.stopPrank();
+    //    assertFalse(apeContract.initialized());
+    //    apeContract.setApeAllocationList(contributors, contributions);
+    //    assertTrue(apeContract.initialized());
+    //    startHoax(address(apeContract), 0e18);
+    //    vm.stopPrank();
+    //
+    //    startHoax(address(this), 1000e18);
+    //    vm.stopPrank();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -109,6 +120,14 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
             vm.stopPrank();
         }
         apeContract.revokeContractCreatorAccess();
+    }
+
+    function makeAllApesApprove2() public {
+        for (uint256 i; i < contributors2.length; ++i) {
+            vm.startPrank(contributors2[i], contributors2[i]);
+            apeContract.approveContract();
+            vm.stopPrank();
+        }
     }
 
     function makeNotAllApesApprove() public {
@@ -167,12 +186,38 @@ contract ApeStrapperTest is PRBTest, Cheats, Utils, ApeStrapper {
     }
 
     function testNannerTime() public {
+        {
+            makeAllApesApprove();
+            apeContract.deposit{value: 4 ether}();
+            assertEq(address(apeContract).balance, 4 ether);
+            apeContract.nannerTime();
+            assertEq(address(apeContract).balance, 0 ether);
+        }
+        {
+     //  vm.startPrank(APESTRAPPER_MULTISIG_ADDRESS);
+     //  apeContract._clearApeAllocationList();
+        //apeContract.setApeAllocationList(contributors2, contributions2);
+      //  vm.stopPrank();
+      //  makeAllApesApprove();
+      //  apeContract.deposit{value: 4 ether}();
+      //  assertEq(address(apeContract).balance, 4 ether);
+      //  apeContract.nannerTime();
+      //  assertEq(address(apeContract).balance, 0 ether);
+        }
+    }
+
+    function testClearApes() public {
+        vm.startPrank(APESTRAPPER_MULTISIG_ADDRESS);
+        apeContract._clearApeAllocationList();
+      //  apeContract.setApeAllocationList(contributors2, contributions2);
+        vm.stopPrank();
         makeAllApesApprove();
         apeContract.deposit{value: 4 ether}();
         assertEq(address(apeContract).balance, 4 ether);
         apeContract.nannerTime();
         assertEq(address(apeContract).balance, 0 ether);
     }
+    
 
     function testFailApesAllApproveOnlyDAO() public {
         startHoax(address(apeContract), 100e18);
